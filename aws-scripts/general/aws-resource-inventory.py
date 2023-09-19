@@ -63,7 +63,6 @@ def main(profile):
     session = boto3.Session(profile_name=profile)
     ec2_client = session.client('ec2', region_name='us-west-2')
     regions = [region['RegionName'] for region in ec2_client.describe_regions()['Regions']]
-    print(profile)
     for i in SELECTIVE_RESOURCE_LIST:
         for j in regions:
             resource_type, resources = get_resources(session, j, i)

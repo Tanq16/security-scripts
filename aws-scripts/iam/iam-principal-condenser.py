@@ -45,8 +45,8 @@ def condense_user(user, groups_orig, policies):
         u['AttachedManagedPolicies'] = []
     if len(u['GroupList']) > 0:
         for g in u['GroupList']:
-            garn = u['Arn'].split('user')[0] + 'group/' + g
-            group = [i for i in groups_orig if i['Arn']==garn][0].copy()
+            garn = u['Arn'].split('user')[0] + 'group/'
+            group = [i for i in groups_orig if i['Arn'].startswith(garn) and i['Arn'].endswith(g)][0].copy()
             for amp in group['AttachedManagedPolicies']:
                 policy = get_policy(amp['PolicyArn'], policies).copy()
                 policy['PolicyDocument'] = policy.pop('Document')
