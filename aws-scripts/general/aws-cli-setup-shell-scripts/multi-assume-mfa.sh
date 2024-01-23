@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# AWS Multi-Session Assume Role
-# -----------------------------
-# The script creates an MFA session with the access keys of a user
-# or uses the default session without MFA if there isn't an enforcement
-# to refresh all role sessions across all accounts populated in code.
-# It also saves all the profile names to `profile_names` and a mapping
-# of `account_num:profile` to `account_names` in the current directory.
+# AWS CLI Setup Multi-Session Assume Role with MFA
+# ------------------------------------------------
+# The script creates an MFA session with the access keys of a user and
+# uses it to refresh all role sessions across all accounts populated in
+# code. It also saves all the profile names to the file `profile_names`
+# and a mapping of `account_num:profile` to the file `account_names` in
+# the current directory. The session lengths are limited to 1 hour only
+# because of role chaining via the MFA session.
 
 
 # Change these values:
@@ -21,7 +22,6 @@ rolename=""
 echo -n "" > profile_names
 echo -n "" > account_names
 
-# Comment this block if no user MFA is involved
 # ---------------------------------------------------------------------
 
 # Account number of the user that is assuming the role
@@ -65,9 +65,7 @@ do
     alias="${acct[1]}"
     echo $alias >> profile_names
     echo "$acct_num:$alias" >> account_names
-    # using mfaprofile will limit sessions to 1 hour due to role chaining
     values=$(aws sts assume-role --role-arn arn:aws:iam::$acct_num:role/$rolename --role-session-name $alias --profile mfaprofile)
-    # values=$(aws sts assume-role --role-arn arn:aws:iam::$acct_num:role/$rolename --duration-seconds 36000 --role-session-name $alias --profile default)
     ak=$(echo $values | jq '.Credentials.AccessKeyId' | tr -d "\"")
     sak=$(echo $values | jq '.Credentials.SecretAccessKey' | tr -d "\"")
     st=$(echo $values | jq '.Credentials.SessionToken' | tr -d "\"")
