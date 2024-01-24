@@ -22,6 +22,7 @@ aws_secret_access_key=""
 rolename="ROLE_TO_SIGN_INTO"
 # Session Duration in seconds; may need to change to 3600 if failure is encountered.
 sess_duration="36000"
+orgurl="company.okta.com"
 # Credentials for Okta account
 username="user@example.com"
 password='h%@jas/!ds'
@@ -50,7 +51,7 @@ do
     echo $alias >> profile_names
     echo "$acct_num:$alias" >> account_names
     sleep 28 # needed to reset MFA TTL and for saml2aws to not cache incorrect token
-    values=$(./saml2aws --idp-provider=Okta --quiet --mfa=Auto --url="https://upworkcorp.okta.com/home/amazon_aws/$oktaid" --username=$username --password=$password --skip-prompt --disable-keychain --role="arn:aws:iam::$acct_num:role/$rolename" login --credential-process --session-duration=$sess_duration --force --credentials-file=/dev/null)
+    values=$(./saml2aws --idp-provider=Okta --quiet --mfa=Auto --url="https://$orgurl/home/amazon_aws/$oktaid" --username=$username --password=$password --skip-prompt --disable-keychain --role="arn:aws:iam::$acct_num:role/$rolename" login --credential-process --session-duration=$sess_duration --force --credentials-file=/dev/null)
     ak=$(echo $values | jq '.AccessKeyId' | tr -d "\"")
     sak=$(echo $values | jq '.SecretAccessKey' | tr -d "\"")
     st=$(echo $values | jq '.SessionToken' | tr -d "\"")
