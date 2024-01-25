@@ -1,17 +1,11 @@
 # IAM Roles Trusting Root
 # -----------------------
 # This script navigates the present working directory to
-# ingest "combined-gaad.json" from the "analysis" dir
-# to collect all accounts present in the file and list
-# out all roles that trust the account root for each of
-# the accounts. The result is stored in the "analysis"
-# directory.
-# 
-# If an argument is passed, it is read as a file for
-# "account_names", and the expected contents are a list
-# of account_number:account_alias values. This is then
-# used to replace the account number values with their
-# aliases.
+# ingest "combined-gaad-naive.json" from the "analysis"
+# directory to collect all accounts present in the file
+# and list out all roles that trust the account root for
+# each of the accounts. The result is stored back in the
+# "analysis" directory.
 
 import json
 import sys
@@ -49,8 +43,8 @@ def main(data):
     f.close()
 
 if __name__ == '__main__':
-    if not os.path.exists('./analysis/combined-gaad.json'):
-        print('Usage: python3 iam-roles-trusting-root.py\nEnsure that analysis/combined-gaad.json in the current directory.')
+    if not os.path.exists('./analysis/combined-gaad-naive.json'):
+        print('Usage: python3 iam-roles-trusting-root.py\nEnsure that analysis/combined-gaad-naive.json in the current directory.')
         sys.exit(1)
     f = open('analysis/combined-gaad.json')
     data = json.loads(f.read())
