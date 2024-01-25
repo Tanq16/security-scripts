@@ -26,7 +26,7 @@ UNWIND row.PolicyDocument as pd
 UNWIND pd.Statement as stmt
 MATCH (p:policy {arn:row.Arn})
 WHERE stmt.Action IS NOT NULL AND stmt.Resource IS NOT NULL
-MERGE (pp:permission {action:stmt.Action, resource:stmt.Resource, effect:stmt.Effect, condition:COALESCE(stmt.Condition,false)})
+MERGE (pp:permission {action:stmt.Action, resource:stmt.Resource, effect:stmt.Effect, condition:stmt.Condition IS NOT NULL})
 MERGE (p)-[:defines]->(pp)
 ```
 ```cypher
