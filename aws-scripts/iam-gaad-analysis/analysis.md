@@ -101,7 +101,52 @@ MATCH (p:policy {arn:policy.Arn})
 CREATE (r)-[:inlinePolicy]->(p)
 ```
 ```cypher
-// load assume role trust policies
+// load assumerole account root trust
+CALL apoc.load.json("file://combined-gaad.json", "RoleDetailList[*]") YIELD value as row
+MATCH (r:role {arn: row.Arn})
+UNWIND row.AssumeRolePolicyDocument as doc
+UNWIND doc.Statement as stmt
+WITH stmt,r
+WHERE stmt.Principal.AWS IS NOT NULL AND stmt.Principal.AWS ENDS WITH ':root'
+UNWIND stmt.Principal.AWS as accroot
+MERGE (a:account {number:split(accroot,":")[4]})
+MERGE (a)-[:assumeRoleTrust]->(r);
+```
+```cypher
+// load assumerole service trust
+CALL apoc.load.json("file://combined-gaad.json", "RoleDetailList[*]") YIELD value as row
+MATCH (r:role {arn:row.Arn})
+UNWIND row.AssumeRolePolicyDocument as doc
+UNWIND doc.Statement as stmt
+with stmt,r
+WHERE stmt.Principal.Service IS NOT NULL
+UNWIND stmt.Principal.Service as service
+MERGE (s:service {name:service})
+MERGE (s)-[:assumeRoleTrust]->(r)
+```
+```cypher
+// load assumerole user trust
+CALL apoc.load.json("file://combined-gaad.json", "RoleDetailList[*]") YIELD value as row
+MATCH (r:role {arn:row.Arn})
+UNWIND row.AssumeRolePolicyDocument as doc
+UNWIND doc.Statement as stmt
+WITH stmt,r
+WHERE stmt.Principal.AWS IS NOT NULL AND stmt.Principal.AWS CONTAINS ':user/'
+UNWIND stmt.Principal.AWS as user
+MATCH (u:user {arn:user})
+MERGE (u)-[:assumeRoleTrust]->(r)
+```
+```cypher
+// load assumerole role trust
+CALL apoc.load.json("file://combined-gaad.json", "RoleDetailList[*]") YIELD value as row
+MATCH (r:role {arn:row.Arn})
+UNWIND row.AssumeRolePolicyDocument as doc
+UNWIND doc.Statement as stmt
+WITH stmt,r
+WHERE stmt.Principal.AWS IS NOT NULL AND stmt.Principal.AWS CONTAINS ':role/'
+UNWIND stmt.Principal.AWS as role
+MATCH (rr:role {arn:role})
+MERGE (rr)-[:assumeRoleTrust]->(r)
 ```
 ```cypher
 // load instance profiles

@@ -8,12 +8,10 @@
 # while "combined-gaad-naive.json" is a simplistic join.
 # Run `aws iam get-account-authorization-details` for all
 # accounts and save the resulting JSON results as files
-# with name like "<profile>-gaad.json". This can also be
-# done by running the `iam-gaad-collector.sh` script. It
-# will store all of the JSON files in a single folder after
-# which, this script will run to build the combined JSON
-# file. The resulting file is stored inside the analysis
-# folder in the current directory.
+# with name like "<profile>-gaad.json". Store all of the
+# JSON files in a single folder and run this script from
+# that folder to build the combined JSON file. The result
+# file is stored inside the analysis folder in the cwd.
 
 import json
 import sys
