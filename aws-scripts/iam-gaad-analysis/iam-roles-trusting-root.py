@@ -46,7 +46,7 @@ if __name__ == '__main__':
     if not os.path.exists('./analysis/combined-gaad-naive.json'):
         print('Usage: python3 iam-roles-trusting-root.py\nEnsure that analysis/combined-gaad-naive.json in the current directory.')
         sys.exit(1)
-    f = open('analysis/combined-gaad.json')
+    f = open('analysis/combined-gaad-naive.json')
     data = json.loads(f.read())
     f.close()
     main(data)

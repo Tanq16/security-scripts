@@ -1,4 +1,4 @@
-# IAM GAAD Analysis (WIP)
+# IAM GAAD Ingestion in Neo4J
 
 First run the gaad collection script as follows &rarr;
 
