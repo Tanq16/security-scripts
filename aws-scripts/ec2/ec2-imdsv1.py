@@ -15,6 +15,7 @@ def list_ec2_instances(profile):
     regions = [region['RegionName'] for region in ec2_client.describe_regions()['Regions']]
 
     num_instances = 0
+    num_instances_with_role = 0
     instances = []
 
     for region in regions:
@@ -26,17 +27,23 @@ def list_ec2_instances(profile):
                 # check if IMDSv1 is enabled
                 if i.get('MetadataOptions') and i['MetadataOptions'].get('HttpTokens') == 'optional':
                     num_instances += 1
+                    instance_profile = None
+                    if i.get('IamInstanceProfile'):
+                        instance_profile = i['IamInstanceProfile']['Arn'].split(":instance-profile/")[1]
+                        num_instances_with_role += 1
                     instances.append({
                         'iid': i['InstanceId'],
                         'region': region,
+                        'instance_profile': instance_profile
                     })
 
-    print('Number of instances with IMDSv1 enabled: ', num_instances)
-    print("\n\n\n")
-    print("| Account Alias | InstanceID | Region |\n| --- | --- | --- |")
+    print('Number of instances with IMDSv1 enabled in', profile, ':', num_instances)
+    print('Number of instances with an instance profile and IMDSv1 enabled in', profile, ':', num_instances_with_role)
+    print("\n\n")
+    print("| Account Alias | InstanceID | Instance Profile | Region |\n| --- | --- | --- | --- |")
     for i in instances:
-        print(f"| {profile} | {i['iid']} | {i['region']} |")
-    print("\n\n\n")
+        print(f"| {profile} | {i['iid']} | {i['instance_profile']} | {i['region']} |")
+    print("\n\n")
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
