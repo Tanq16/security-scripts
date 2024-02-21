@@ -160,7 +160,7 @@ def combine_gaad_files(gaad_path):
     f = open('analysis/combined-gaad.json', 'w')
     json.dump(combinedfinal, f)
     f.close()
-    print("\Dynamic GAAD Combine - Complete")
+    print("Dynamic GAAD Combine - Complete")
 
 if __name__ == '__main__':
     if not os.path.exists('./gaads'):
