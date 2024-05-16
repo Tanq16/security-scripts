@@ -7,6 +7,7 @@
 
 import boto3
 import sys
+from botocore.exceptions import ClientError
 
 def main(profile):
     session = boto3.Session(profile_name=profile)
@@ -17,10 +18,13 @@ def main(profile):
     print("| --- | --- | --- | --- |")
 
     for bucket_name in bucket_list:
-        response = s3.BucketVersioning(bucket_name)
-        versioning = response.status
-        mfadel = response.mfa_delete
-        print(f"| {profile} | {bucket_name} | {versioning} | {mfadel} |")
+        try:
+            response = s3.BucketVersioning(bucket_name)
+            versioning = response.status
+            mfadel = response.mfa_delete
+            print(f"| {profile} | {bucket_name} | {versioning} | {mfadel} |")
+        except ClientError as e:
+            continue
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
