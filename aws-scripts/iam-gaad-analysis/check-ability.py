@@ -23,12 +23,14 @@ def check_action_in_policy(action, policies):
 
 def check_user_permissions(actionlist, user, data, groups):
     policies = []
-    for i in user["AttachedManagedPolicies"]:
-        for x in data["Policies"]:
-            if x["Arn"] == i["PolicyArn"]:
-                policies += x["PolicyDocument"]["Statement"]
-    for i in user["UserPolicyList"]:
-        policies += i["PolicyDocument"]["Statement"]
+    if "AttachedManagedPolicies" in user.keys():
+        for i in user["AttachedManagedPolicies"]:
+            for x in data["Policies"]:
+                if x["Arn"] == i["PolicyArn"]:
+                    policies += x["PolicyDocument"]["Statement"]
+    if "UserPolicyList" in user.keys():
+        for i in user["UserPolicyList"]:
+            policies += i["PolicyDocument"]["Statement"]
     # TODO: Add group policies
     allowed = True
     for i in actionlist:
@@ -39,12 +41,14 @@ def check_user_permissions(actionlist, user, data, groups):
 
 def check_role_permissions(actionlist, role, data):
     policies = []
-    for i in role["AttachedManagedPolicies"]:
-        for x in data["Policies"]:
-            if x["Arn"] == i["PolicyArn"]:
-                policies += x["PolicyDocument"]["Statement"]
-    for i in role["RolePolicyList"]:
-        policies += i["PolicyDocument"]["Statement"]
+    if "AttachedManagedPolicies" in user.keys():
+        for i in role["AttachedManagedPolicies"]:
+            for x in data["Policies"]:
+                if x["Arn"] == i["PolicyArn"]:
+                    policies += x["PolicyDocument"]["Statement"]
+    if "RolePolicyList" in user.keys():
+        for i in role["RolePolicyList"]:
+            policies += i["PolicyDocument"]["Statement"]
     allowed = True
     for i in actionlist:
         allowed = check_action_in_policy(i, policies)

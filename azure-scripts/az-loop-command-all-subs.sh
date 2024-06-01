@@ -18,6 +18,7 @@ read command
 for i in "${subscriptions[@]}"; do
     az account set --subscription "$i"
     subs=$(echo "${i,,}" | tr -d " .,!#\$%^&()[];<>@")
+    sleep 1
     commandsubs="${command//yyy/$subs}"
     eval "$commandsubs"
     echo "."

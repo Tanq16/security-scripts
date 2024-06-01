@@ -38,7 +38,7 @@ def main(profile):
             if e.response['Error']['Code'] == 'NoSuchBucketPolicy':
                 policy = None
             else:
-                raise e
+                continue
         if policy == None:
             print(f"| {profile} | {bucket_name} | Allowed - No Bucket Policy |")
         else:
