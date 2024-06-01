@@ -21,8 +21,21 @@ def check_action_in_policy(action, policies):
         #     break
     return allowed
 
-def check_user_permissions(actionlist, user, data):
-    return False
+def check_user_permissions(actionlist, user, data, groups):
+    policies = []
+    for i in user["AttachedManagedPolicies"]:
+        for x in data["Policies"]:
+            if x["Arn"] == i["PolicyArn"]:
+                policies += x["PolicyDocument"]["Statement"]
+    for i in user["UserPolicyList"]:
+        policies += i["PolicyDocument"]["Statement"]
+    # TODO: Add group policies
+    allowed = True
+    for i in actionlist:
+        allowed = check_action_in_policy(i, policies)
+        if not allowed:
+            break
+    return allowed
 
 def check_role_permissions(actionlist, role, data):
     policies = []
@@ -46,7 +59,8 @@ def action_allowed(actionlist, data):
         if cando:
             principals.append(i["Arn"])
     for i in data["UserDetailList"]:
-        cando = check_user_permissions(actionlist, i, data)
+        groups = []
+        cando = check_user_permissions(actionlist, i, data, groups)
         if cando:
             principals.append(i["Arn"])
     return principals
