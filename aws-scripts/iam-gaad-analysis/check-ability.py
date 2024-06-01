@@ -41,12 +41,12 @@ def check_user_permissions(actionlist, user, data, groups):
 
 def check_role_permissions(actionlist, role, data):
     policies = []
-    if "AttachedManagedPolicies" in user.keys():
+    if "AttachedManagedPolicies" in role.keys():
         for i in role["AttachedManagedPolicies"]:
             for x in data["Policies"]:
                 if x["Arn"] == i["PolicyArn"]:
                     policies += x["PolicyDocument"]["Statement"]
-    if "RolePolicyList" in user.keys():
+    if "RolePolicyList" in role.keys():
         for i in role["RolePolicyList"]:
             policies += i["PolicyDocument"]["Statement"]
     allowed = True
