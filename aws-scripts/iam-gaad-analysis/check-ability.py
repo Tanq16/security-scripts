@@ -31,7 +31,15 @@ def check_user_permissions(actionlist, user, data, groups):
     if "UserPolicyList" in user.keys():
         for i in user["UserPolicyList"]:
             policies += i["PolicyDocument"]["Statement"]
-    # TODO: Add group policies
+    for group in user["GroupList"]:
+        if "AttachedManagedPolicies" in group.keys():
+            for i in group["AttachedManagedPolicies"]:
+                for x in data["Policies"]:
+                    if x["Arn"] == i["PolicyArn"]:
+                        policies += x["PolicyDocument"]["Statement"]
+        if "GroupPolicyList" in group.keys():
+            for i in group["GroupPolicyList"]:
+                policies += i["PolicyDocument"]["Statement"]
     allowed = True
     for i in actionlist:
         allowed = check_action_in_policy(i, policies)
