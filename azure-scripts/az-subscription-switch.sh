@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# Azure - Subscription Switcher
+# -----------------------------
+# This bash script is aimed at switching subsriptions. It
+# provides a list of all subscriptions the current CLI user
+# is capable of signing into. The user can select the serial
+# number from the shown list and the script will set the
+# associated subscription as active in the CLI session.
+
 subscriptionarr=$(az account list --query '[].name' -o tsv)
 
 echo "Azure Subscriptions:"
