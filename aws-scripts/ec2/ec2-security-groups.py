@@ -54,8 +54,14 @@ def main(profile):
     print("| --- | --- | --- | --- |")
     for region in ec2_regions:
         ec2_client = session.client('ec2', region_name=region)
-        security_groups = ec2_client.describe_security_groups()['SecurityGroups']
-        network_interfaces = ec2_client.describe_network_interfaces()['NetworkInterfaces']
+        security_groups = []
+        try:
+            security_groups = ec2_client.describe_security_groups()['SecurityGroups']
+            network_interfaces = ec2_client.describe_network_interfaces()['NetworkInterfaces']
+        except:
+            pass
+        if security_groups == []:
+            continue
         print_security_group_details(security_groups, network_interfaces, region, profile)
 
 if __name__ == "__main__":

@@ -20,7 +20,14 @@ def list_ec2_instances(profile):
 
     for region in regions:
         ec2_client = session.client('ec2', region_name=region)
-        list_instances = ec2_client.describe_instances()
+        list_instances = {}
+        try:
+            list_instances = ec2_client.describe_instances()
+        except:
+            pass
+
+        if list_instances == {}:
+            continue
 
         for res in list_instances['Reservations']:
             for i in res['Instances']:

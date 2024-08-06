@@ -25,9 +25,13 @@ def list_ebs_volumes(profile):
 
     for region in regions:
         ec2_client = session.client('ec2', region_name=region)
+        volumes,snapshots = [],[]
 
-        volumes = ec2_client.describe_volumes(MaxResults=9999)['Volumes']
-        snapshots = ec2_client.describe_snapshots(OwnerIds=['self'], MaxResults=9999)['Snapshots']
+        try:
+            volumes = ec2_client.describe_volumes(MaxResults=9999)['Volumes']
+            snapshots = ec2_client.describe_snapshots(OwnerIds=['self'], MaxResults=9999)['Snapshots']
+        except:
+            pass
 
         # Check each volume and snapshot for encryption and attachment
         for volume in volumes:
