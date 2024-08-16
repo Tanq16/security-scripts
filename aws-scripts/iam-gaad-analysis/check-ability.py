@@ -74,7 +74,12 @@ def check_role_permissions(actionlist, role, data):
 def action_allowed(actionlist, data, excludeps):
     principals = []
     for i in data["RoleDetailList"]:
-        if i["Arn"] in excludeps:
+        init = False
+        for j in excludeps:
+            if j in i["Arn"]:
+                init = True
+                break
+        if init:
             continue
         cando = check_role_permissions(actionlist, i, data)
         if cando:
@@ -92,18 +97,29 @@ def main(actionstring, excludeps):
     ingested_data = json.loads(f.read())
     f.close()
 
-    actions_to_check = actionstring.split(",")
+    if not actionstring == "privesc":
+        actions_to_check = actionstring.split(",")
+        principals = action_allowed(actions_to_check, ingested_data, excludeps)
+        for i in principals:
+            print(i)
+        return
 
-    principals = action_allowed(actions_to_check, ingested_data, excludeps)
-    for i in principals:
-        print(i)
+    privescs = ["iam:CreatePolicyVersion","ec2:RunInstances,iam:PassRole","iam:CreateAccessKey","cloudformation:CreateChangeSet,cloudformation:ExecuteChangeSet","lambda:CreateFunction,lambda:InvokeFunction,iam:PassRole","iam:AttachUserPolicy"]
+
+    print("| Privesc Vector | Principal |\n| --- | --- |")
+    for i in privescs:
+        actions_to_check = i.split(",")
+        principals = action_allowed(actions_to_check, ingested_data, excludeps)
+        for j in principals:
+            print("| " + i + " | " + j + " |")
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print('Usage: python3 check-ability.py action_list_without_spaces_just_commas [exclude-list-file]\nEnsure that analysis/combined-gaad.json in the current directory.\nThe arns in the exclude list file path passed optionally are to exclude arns like administrative principals we know for a fact are safe.')
+        print('Usage: python3 check-ability.py action_list_without_spaces_just_commas [exclude-list-file]\nEnsure that analysis/combined-gaad.json in the current directory.\nThe arns in the exclude list file path passed optionally are to exclude arns like administrative principals we know for a fact are safe.\nIf the action_list argument is privesc, it will cycle through known privesc vectors and provide a markdown table.')
         sys.exit(1)
     if len(sys.argv) > 2:
         f = open(sys.argv[2])
-        excludelist = f.read().split("\n")
+        excludelist = [x for x in f.read().split("\n") if not x==""]
         f.close()
     main(sys.argv[1], excludelist)
+
