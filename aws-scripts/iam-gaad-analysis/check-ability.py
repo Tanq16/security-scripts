@@ -13,10 +13,10 @@ import sys
 def check_action_in_policy(action, policies):
     allowed = False
     for i in policies:
-        if not i["Action"] == None and action in i["Action"] and i["Effect"] == "Allow":
+        if not i["Action"] == None and any(action.upper() == x.upper() for x in i["Action"]) and i["Effect"] == "Allow":
             allowed = True
             break
-        elif not i["NotAction"] == None and not action in i["NotAction"] and i["Effect"] == "Allow":
+        elif not i["NotAction"] == None and not any(action.upper() == x.upper() for x in i["NotAction"]) and i["Effect"] == "Allow":
             allowed = True
             break
     return allowed
